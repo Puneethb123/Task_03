@@ -1,0 +1,99 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <unistd.h>
+
+enum State 
+{
+    OFF,
+    IDLE,
+    RUNNING,
+    PAUSED,
+    ERROR_STATE 
+};
+
+enum Event 
+{
+    START,
+    STOP,
+    PAUSE,
+    RESUME,
+    EVENT_ERROR 
+};
+
+struct StateMachine 
+{
+    enum State current_state;
+};
+
+void initStateMachine(struct StateMachine *sm) 
+{
+    sm->current_state = OFF;
+}
+
+void handleTransition(struct StateMachine *sm, enum Event event) {
+    switch (sm->current_state) {
+        case OFF:
+            if (event == START) {
+                sm->current_state = IDLE;
+                printf("Machine started, entering Idle state\n");
+            }
+            break;
+
+        case IDLE:
+            if (event == START) {
+                sm->current_state = RUNNING;
+                printf("Machine started, entering Running state\n");
+            }
+            break;
+
+        case RUNNING:
+            if (event == STOP) {
+                sm->current_state = IDLE;
+                printf("Machine stopped, entering Idle state\n");
+            } else if (event == PAUSE) {
+                sm->current_state = PAUSED;
+                printf("Machine paused, entering Paused state\n");
+            } else if (event == EVENT_ERROR) {
+                sm->current_state = ERROR_STATE;
+                printf("Error occurred, entering Error state\n");
+            } 
+            break;
+
+        case PAUSED:
+            if (event == RESUME) {
+                sm->current_state = RUNNING;
+                printf("Machine resumed, entering Running state\n");
+            }
+            break;
+    }
+}
+
+int main() {
+    struct StateMachine sm;
+    initStateMachine(&sm);
+
+    while (1) {
+        sleep(2); // 2 sec
+        printf("Start event\n");
+        handleTransition(&sm, START);
+
+        sleep(3); // 3 sec
+        printf("Stop event\n");
+        handleTransition(&sm, STOP);
+
+        sleep(4); // 4 sec
+        printf("Pause event\n");
+        handleTransition(&sm, PAUSE);
+
+        sleep(2); // 2 sec
+        printf("Resume event\n");
+        handleTransition(&sm, RESUME);
+
+        sleep(5); // 5 sec
+        printf("Error event\n");
+        handleTransition(&sm, EVENT_ERROR);
+    }
+
+    return 0;
+}

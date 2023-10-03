@@ -1,0 +1,57 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+enum TrafficLightState {
+    RED,
+    YELLOW,
+    GREEN,
+    BLINKING_RED
+};
+
+void RedState() 
+{
+    printf("Traffic Light: Red\n");
+}
+void YellowState() 
+{
+    printf("Traffic Light: Yellow\n");
+}
+
+void GreenState() {
+    printf("Traffic Light: Green\n");
+}
+
+void BlinkingRedState() {
+    printf("Traffic Light: Blinking Red\n");
+}
+
+int main() {
+    enum TrafficLightState currentState = RED;
+    while(1) {
+        switch (currentState) {
+            case RED:
+                RedState();
+                sleep(3);
+                currentState = GREEN;
+                break;
+            case YELLOW:
+                YellowState();
+                sleep(1);
+                currentState = RED;
+                break;
+            case GREEN:
+                GreenState();
+                sleep(3);
+                currentState = YELLOW;
+                break;
+            case BLINKING_RED:
+                BlinkingRedState();
+                sleep(1);
+                currentState = RED;
+                break;
+        }
+        sleep(2);
+    }
+
+    return 0;
+}
